@@ -43,8 +43,4 @@ public class advent41 {
         
         sc.close();
     }
-
-    public static void playGame(){
-
-    }
 }

@@ -1,8 +1,11 @@
 package ExtraClasses;
+import java.util.*;
 
 public class Player {
     private int currentPosition;
     private int score;
+    private long wins=0;
+    private Stack<Integer> positions = new Stack<Integer>();
 
     public Player(int startPosition){
         currentPosition = startPosition;
@@ -15,6 +18,18 @@ public class Player {
 
     public int getCurrentPosition(){
         return currentPosition;
+    }
+
+    public long getWins(){
+        return wins;
+    }
+
+    public void setScore(int score){
+        this.score = score;
+    }
+
+    public void setCurrentPosition(int currentPosition){
+        this.currentPosition = currentPosition;
     }
 
     public int rollTheDice(int diceValue,int times,int diceSides){
@@ -44,6 +59,18 @@ public class Player {
         if(score>=winningScore){
             return true;
         }
+        return false;
+    }
+
+    public boolean rollQuantumDice(int score,int dice){
+        if(checkWinningScore(21)){
+            wins++;
+            setScore(score-getCurrentPosition());
+            setCurrentPosition(positions.pop());
+            return true;
+        }
+        positions.add(getCurrentPosition());
+        movePawn(dice);
         return false;
     }
 }

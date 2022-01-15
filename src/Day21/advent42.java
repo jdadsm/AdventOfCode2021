@@ -5,8 +5,6 @@ import java.io.*;
 import ExtraClasses.Player;
 
 public class advent42 {
-    static int timesDiceRolled = 0;
-    static int diceValue = 0;
     public static void main(String[] args) throws IOException{
         File f = new File("advent42.txt");
         Scanner sc = new Scanner(f);
@@ -15,36 +13,37 @@ public class advent42 {
         temp = sc.nextLine();
         Player player2 = new Player(Character.getNumericValue(temp.charAt(temp.length()-1)));
 
-        int rollsPerTurn = 3;
-        int diceSides = 3;
-        int winningScore = 21;
+        rollDiceQuantum1(player1, player2);
 
-        while(!player1.checkWinningScore(winningScore) && !player2.checkWinningScore(winningScore)){
-            diceValue = player1.rollTheDice(diceValue, rollsPerTurn,diceSides);
-            timesDiceRolled+= rollsPerTurn;
-            if(player1.checkWinningScore(winningScore) || player2.checkWinningScore(winningScore)){
-                break;
-            }
-            diceValue = player2.rollTheDice(diceValue, rollsPerTurn,diceSides);
-            timesDiceRolled+= rollsPerTurn;
-        }
-        
-        int res = 0;
-        
-        if (player1.checkWinningScore(winningScore)) {
-            res = timesDiceRolled*player2.getScore();
-        }else{
-            res = timesDiceRolled*player1.getScore();
-        }
-
-        System.out.println(res);
-
-
+        System.out.println(player1.getWins());
+        System.out.println(player2.getWins());
         
         sc.close();
     }
 
-    public static void playGame(){
+    public static void rollDiceQuantum1(Player player1,Player player2){
+        if(player1.rollQuantumDice(player1.getScore(), 1)){
+            if(player1.rollQuantumDice(player1.getScore(), 2)){
+                if(player1.rollQuantumDice(player1.getScore(), 3)){
+                    return;
+                }
+                rollDiceQuantum2(player1,player2);
+            }
+        }
+        rollDiceQuantum2(player1,player2);
+        return;
+    }
 
+    public static void rollDiceQuantum2(Player player1,Player player2){
+        if(player2.rollQuantumDice(player2.getScore(), 1)){
+            if(player2.rollQuantumDice(player2.getScore(), 2)){
+                if(player2.rollQuantumDice(player2.getScore(), 3)){
+                    return;
+                }
+            }
+            rollDiceQuantum1(player1,player2);
+        }
+        rollDiceQuantum1(player1,player2);
+        return;
     }
 }
