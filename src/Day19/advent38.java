@@ -14,7 +14,7 @@ public class advent38 {
     static List<int[]> signals = new ArrayList<int[]>();
 
     public static void main(String[] args) throws IOException {
-        File f = new File("AdventOfCode2021/advent37.txt");
+        File f = new File("advent38.txt");
         Scanner sc = new Scanner(f);
         String line = sc.nextLine();
 

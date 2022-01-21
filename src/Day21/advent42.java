@@ -5,45 +5,87 @@ import java.io.*;
 import ExtraClasses.Player;
 
 public class advent42 {
-    public static void main(String[] args) throws IOException{
-        File f = new File("advent42.txt");
+    static Player player1;
+    static Player player2;
+    static long[][][][] savedWins1 = new long[21][21][10][10];
+    static long[][][][] savedWins2 = new long[21][21][10][10];
+    static Stack<Integer> positions1 = new Stack<Integer>();
+    static Stack<Integer> positions2 = new Stack<Integer>();
+
+    public static void main(String[] args) throws IOException {
+        File f = new File("teste.txt");
         Scanner sc = new Scanner(f);
         String temp = sc.nextLine();
-        Player player1 = new Player(Character.getNumericValue(temp.charAt(temp.length()-1)));
+        int p1StartPos = Character.getNumericValue(temp.charAt(temp.length() - 1));
+        player1 = new Player(p1StartPos);
         temp = sc.nextLine();
-        Player player2 = new Player(Character.getNumericValue(temp.charAt(temp.length()-1)));
+        int p2StartPos = Character.getNumericValue(temp.charAt(temp.length() - 1));
+        player2 = new Player(p2StartPos);
+        positions1.add(p1StartPos);
+        positions2.add(p2StartPos);
+        rollDiracDice1();
 
-        rollDiceQuantum1(player1, player2);
+        System.out.println(savedWins1[0][0][p1StartPos - 1][p2StartPos - 1]);
+        System.out.println(savedWins2[0][0][p1StartPos - 1][p2StartPos - 1]);
 
-        System.out.println(player1.getWins());
-        System.out.println(player2.getWins());
-        
         sc.close();
     }
 
-    public static void rollDiceQuantum1(Player player1,Player player2){
-        if(player1.rollQuantumDice(player1.getScore(), 1)){
-            if(player1.rollQuantumDice(player1.getScore(), 2)){
-                if(player1.rollQuantumDice(player1.getScore(), 3)){
-                    return;
+    public static long rollDiracDice1() {
+        long wins1 = 0;
+        long wins2 = 0;
+        int player1score = player1.getScore();
+        int player2score = player2.getScore();
+        int player1pos = player1.getCurrentPosition() - 1;
+        int player2pos = player2.getCurrentPosition() - 1;
+        if (savedWins1[player1score][player2score][player1pos][player2pos] != 0) {
+            wins1 += savedWins1[player1score][player2score][player1pos][player2pos];
+        } else {
+            for (int i1 = 1; i1 <= 3; i1++) {
+                for (int i2 = 1; i2 <= 3; i2++) {
+                    for (int i3 = 1; i3 <= 3; i3++) {
+                        if (player1.rollDirac(i1 + i2 + i3)) {
+                            wins1++;
+                            continue;
+                        }
+                        positions1.add(player1pos + 1);
+                        wins2 += rollDiracDice2();
+                    }
                 }
-                rollDiceQuantum2(player1,player2);
             }
+            savedWins2[player1score][player2score][player1pos][player2pos] += wins2;
         }
-        rollDiceQuantum2(player1,player2);
-        return;
+        player2.setCurrentPosition(positions2.pop());
+        player2.setScore(player2score - positions2.peek());
+        return wins1;
     }
 
-    public static void rollDiceQuantum2(Player player1,Player player2){
-        if(player2.rollQuantumDice(player2.getScore(), 1)){
-            if(player2.rollQuantumDice(player2.getScore(), 2)){
-                if(player2.rollQuantumDice(player2.getScore(), 3)){
-                    return;
+    public static long rollDiracDice2() {
+        long wins1 = 0;
+        long wins2 = 0;
+        int player1score = player1.getScore();
+        int player2score = player2.getScore();
+        int player1pos = player1.getCurrentPosition() - 1;
+        int player2pos = player2.getCurrentPosition() - 1;
+        if (savedWins2[player1score][player2score][player1pos][player2pos] != 0) {
+            wins2 += savedWins2[player1score][player2score][player1pos][player2pos];
+        } else {
+            for (int i1 = 1; i1 <= 3; i1++) {
+                for (int i2 = 1; i2 <= 3; i2++) {
+                    for (int i3 = 1; i3 <= 3; i3++) {
+                        if (player2.rollDirac(i1 + i2 + i3)) {
+                            wins2++;
+                        }
+                        positions2.add(player2pos + 1);
+                        wins1 += rollDiracDice1();
+                    }
                 }
             }
-            rollDiceQuantum1(player1,player2);
+            savedWins1[player1score][player2score][player1pos][player2pos] += wins1;
         }
-        rollDiceQuantum1(player1,player2);
-        return;
+        player1.setCurrentPosition(positions1.pop());
+        player1.setScore(player1score - positions1.peek());
+        return wins2;
     }
+
 }
