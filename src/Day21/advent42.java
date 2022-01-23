@@ -11,6 +11,8 @@ public class advent42 {
     static long[][][][] savedWins2 = new long[21][21][10][10];
     static Stack<Integer> positions1 = new Stack<Integer>();
     static Stack<Integer> positions2 = new Stack<Integer>();
+    static long totalWins1 = 0;
+    static long totalWins2 = 0;
 
     public static void main(String[] args) throws IOException {
         File f = new File("teste.txt");
@@ -38,7 +40,7 @@ public class advent42 {
         int player2score = player2.getScore();
         int player1pos = player1.getCurrentPosition() - 1;
         int player2pos = player2.getCurrentPosition() - 1;
-        if (savedWins1[player1score][player2score][player1pos][player2pos] != 0) {
+        if (savedWins1[player1score][player2score][player1pos][player2pos] != 0 || savedWins2[player1score][player2score][player1pos][player2pos] != 0) {
             wins1 += savedWins1[player1score][player2score][player1pos][player2pos];
         } else {
             for (int i1 = 1; i1 <= 3; i1++) {
@@ -48,16 +50,19 @@ public class advent42 {
                             wins1++;
                             continue;
                         }
-                        positions1.add(player1pos + 1);
+                        positions1.add(player1.getCurrentPosition());
                         wins2 += rollDiracDice2();
                     }
                 }
             }
-            savedWins2[player1score][player2score][player1pos][player2pos] += wins2;
         }
-        player2.setCurrentPosition(positions2.pop());
-        player2.setScore(player2score - positions2.peek());
-        return wins1;
+        savedWins1[player1.getScore()][player2.getScore()][player1.getCurrentPosition()-1][player2.getCurrentPosition()-1] = wins1;
+        player2.setScore(player2score - positions2.pop());
+        if(!positions2.isEmpty()){
+            player2.setCurrentPosition(positions2.peek()); 
+        }
+        
+        return wins2;
     }
 
     public static long rollDiracDice2() {
@@ -67,7 +72,7 @@ public class advent42 {
         int player2score = player2.getScore();
         int player1pos = player1.getCurrentPosition() - 1;
         int player2pos = player2.getCurrentPosition() - 1;
-        if (savedWins2[player1score][player2score][player1pos][player2pos] != 0) {
+        if (savedWins2[player1score][player2score][player1pos][player2pos] != 0 || savedWins1[player1score][player2score][player1pos][player2pos] != 0) {
             wins2 += savedWins2[player1score][player2score][player1pos][player2pos];
         } else {
             for (int i1 = 1; i1 <= 3; i1++) {
@@ -75,17 +80,20 @@ public class advent42 {
                     for (int i3 = 1; i3 <= 3; i3++) {
                         if (player2.rollDirac(i1 + i2 + i3)) {
                             wins2++;
+                            continue;
                         }
-                        positions2.add(player2pos + 1);
+                        positions2.add(player2.getCurrentPosition());
                         wins1 += rollDiracDice1();
                     }
                 }
             }
-            savedWins1[player1score][player2score][player1pos][player2pos] += wins1;
         }
-        player1.setCurrentPosition(positions1.pop());
-        player1.setScore(player1score - positions1.peek());
-        return wins2;
+        savedWins2[player1.getScore()][player2.getScore()][player1.getCurrentPosition()-1][player2.getCurrentPosition()-1] = wins2;
+        player1.setScore(player1score - positions1.pop());
+        if(!positions1.isEmpty()){
+            player1.setCurrentPosition(positions1.peek()); 
+        }
+        return wins1;
     }
 
 }
